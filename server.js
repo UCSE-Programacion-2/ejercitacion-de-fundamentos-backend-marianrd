@@ -44,8 +44,13 @@ app.get("/frutas", (req, res) => {
  * 4. Debe retornar el arreglo filtrado con status 200. Si no hay, retorna un arreglo vacío.
  * IMPORTANTE: ¡Esta ruta debe ir ANTES que la ruta GET /frutas/:id!
  */
-app.get('/frutas/buscar', (req, res) => {
-  // Tu código aquí
+app.get("/frutas/buscar", (req, res) => {
+  const nombre = req.query.nombre || "";
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  const resultado = frutas.filter((f) =>
+    f.nombre.toLowerCase().includes(nombre.toLowerCase()),
+  );
+  res.status(200).json(resultado);
 });
 
 /**
