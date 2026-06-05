@@ -74,8 +74,13 @@ app.get("/frutas/:id", (req, res) => {
  * 5. Debe escribir el nuevo arreglo en el archivo data/frutas.json utilizando fs.writeFileSync o fs.promises.writeFile.
  * 6. Debe retornar la fruta creada con status 201.
  */
-app.post('/frutas', (req, res) => {
-  // Tu código aquí
+app.post("/frutas", (req, res) => {
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  const maxId = frutas.reduce((max, f) => Math.max(max, f.id), 0);
+  const nuevaFruta = { id: maxId + 1, ...req.body };
+  frutas.push(nuevaFruta);
+  fs.writeFileSync(dataFilePath, JSON.stringify(frutas, null, 2), "utf8");
+  res.status(201).json(nuevaFruta);
 });
 
 // Iniciar el servidor
