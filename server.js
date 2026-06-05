@@ -31,8 +31,9 @@ const dataFilePath = path.join(__dirname, 'data', 'frutas.json');
  * 2. Debe parsear el contenido a un objeto de JavaScript (JSON.parse).
  * 3. Debe retornar el arreglo de frutas con un status 200.
  */
-app.get('/frutas', (req, res) => {
-  // Tu código aquí
+app.get("/frutas", (req, res) => {
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  res.status(200).json(frutas);
 });
 
 /**
