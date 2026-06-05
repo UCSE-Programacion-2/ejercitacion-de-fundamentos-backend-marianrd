@@ -31,8 +31,9 @@ const dataFilePath = path.join(__dirname, 'data', 'frutas.json');
  * 2. Debe parsear el contenido a un objeto de JavaScript (JSON.parse).
  * 3. Debe retornar el arreglo de frutas con un status 200.
  */
-app.get('/frutas', (req, res) => {
-  // Tu código aquí
+app.get("/frutas", (req, res) => {
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  res.status(200).json(frutas);
 });
 
 /**
@@ -43,8 +44,13 @@ app.get('/frutas', (req, res) => {
  * 4. Debe retornar el arreglo filtrado con status 200. Si no hay, retorna un arreglo vacío.
  * IMPORTANTE: ¡Esta ruta debe ir ANTES que la ruta GET /frutas/:id!
  */
-app.get('/frutas/buscar', (req, res) => {
-  // Tu código aquí
+app.get("/frutas/buscar", (req, res) => {
+  const nombre = req.query.nombre || "";
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  const resultado = frutas.filter((f) =>
+    f.nombre.toLowerCase().includes(nombre.toLowerCase()),
+  );
+  res.status(200).json(resultado);
 });
 
 /**
@@ -53,11 +59,15 @@ app.get('/frutas/buscar', (req, res) => {
  * 2. Debe leer el archivo data/frutas.json.
  * 3. Debe buscar la fruta que coincida con el id.
  * 4. Si la encuentra, retornarla con status 200.
- * 
+ *
  * 5. Si no la encuentra, retornar un objeto { error: "Fruta no encontrada" } con status 404.
  */
-app.get('/frutas/:id', (req, res) => {
-  // Tu código aquí
+app.get("/frutas/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  const fruta = frutas.find((f) => f.id === id);
+  if (!fruta) return res.status(404).json({ error: "Fruta no encontrada" });
+  res.status(200).json(fruta);
 });
 
 /**
@@ -69,8 +79,13 @@ app.get('/frutas/:id', (req, res) => {
  * 5. Debe escribir el nuevo arreglo en el archivo data/frutas.json utilizando fs.writeFileSync o fs.promises.writeFile.
  * 6. Debe retornar la fruta creada con status 201.
  */
-app.post('/frutas', (req, res) => {
-  // Tu código aquí
+app.post("/frutas", (req, res) => {
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  const maxId = frutas.reduce((max, f) => Math.max(max, f.id), 0);
+  const nuevaFruta = { id: maxId + 1, ...req.body };
+  frutas.push(nuevaFruta);
+  fs.writeFileSync(dataFilePath, JSON.stringify(frutas, null, 2), "utf8");
+  res.status(201).json(nuevaFruta);
 });
 
 // Iniciar el servidor
