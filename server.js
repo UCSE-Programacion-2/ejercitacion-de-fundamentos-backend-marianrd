@@ -54,11 +54,15 @@ app.get('/frutas/buscar', (req, res) => {
  * 2. Debe leer el archivo data/frutas.json.
  * 3. Debe buscar la fruta que coincida con el id.
  * 4. Si la encuentra, retornarla con status 200.
- * 
+ *
  * 5. Si no la encuentra, retornar un objeto { error: "Fruta no encontrada" } con status 404.
  */
-app.get('/frutas/:id', (req, res) => {
-  // Tu código aquí
+app.get("/frutas/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const frutas = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+  const fruta = frutas.find((f) => f.id === id);
+  if (!fruta) return res.status(404).json({ error: "Fruta no encontrada" });
+  res.status(200).json(fruta);
 });
 
 /**
